@@ -1,7 +1,7 @@
 name: flutter_serial_communication
 description: Flutter plugin for handling serial communication
 version: 0.0.1
-homepage:
+homepage: https://github.com/farellsujanto/flutter_serial_communication
 
 environment:
   sdk: '>=2.19.5 <3.0.0'
