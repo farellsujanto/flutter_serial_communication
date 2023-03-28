@@ -30,7 +30,7 @@ flutter pub add shelf_static
 or by adding dependencies to your package's pubspec.yaml then run `dart pub get`
 ```
 dependencies:
-  flutter_serial_communication: 0.0.1
+  flutter_serial_communication: 0.1.0
 ```
 
 **4.** Import it in your .dart file

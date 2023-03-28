@@ -1,3 +1,6 @@
+## 0.1.0
+- Update to minor version v0.1.0
+
 ## 0.0.3
 - Remove uneeded libraries to reduce package size
 
