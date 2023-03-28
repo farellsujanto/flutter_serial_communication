@@ -1,7 +1,9 @@
+## 0.0.3
+- Remove uneeded libraries to reduce package size
+
 ## 0.0.2
 - Update descriptions
 - Follow flutter lint formats
-
 
 ## 0.0.1
 
