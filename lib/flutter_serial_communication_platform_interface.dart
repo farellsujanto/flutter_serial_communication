@@ -26,10 +26,6 @@ abstract class FlutterSerialCommunicationPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<String?> getPlatformVersion() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
-  }
-
   Future<List<String>?> getAvailableDevices() {
     throw UnimplementedError('getAvailableDevices() has not been implemented.');
   }

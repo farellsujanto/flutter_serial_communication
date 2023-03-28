@@ -14,13 +14,6 @@ class MethodChannelFlutterSerialCommunication
   final methodChannel = const MethodChannel('flutter_serial_communication');
 
   @override
-  Future<String?> getPlatformVersion() async {
-    final version =
-        await methodChannel.invokeMethod<String>('getPlatformVersion');
-    return version;
-  }
-
-  @override
   Future<List<String>?> getAvailableDevices() async {
     final availableDevices =
         await methodChannel.invokeMethod<List<dynamic>>('getAvailableDevices');
