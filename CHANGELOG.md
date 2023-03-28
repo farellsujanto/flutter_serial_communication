@@ -1,3 +1,3 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+* **Android** Add basic functionalities for serial communication: `getAvailableDevices`, `connect`, `disconnect`, `write`, `getSerialMessageListener`, `getDeviceConnectionListener`.
