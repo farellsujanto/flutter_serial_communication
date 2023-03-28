@@ -16,38 +16,53 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
   final _flutterSerialCommunicationPlugin = FlutterSerialCommunication();
+  bool isConnected = false;
+  List<String> connectedDevices = [];
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+
+    _flutterSerialCommunicationPlugin
+        .getSerialMessageListener()
+        .receiveBroadcastStream()
+        .listen((event) {
+      debugPrint("Received From Native:  $event");
+    });
+
+    _flutterSerialCommunicationPlugin
+        .getDeviceConnectionListener()
+        .receiveBroadcastStream()
+        .listen((event) {
+      setState(() {
+        isConnected = event;
+      });
+    });
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await _flutterSerialCommunicationPlugin.getPlatformVersion() ?? 'Unknown platform version';
-
-          var test = await _flutterSerialCommunicationPlugin.getAvailableDevices() ?? 'Unknown zz version';
-          print(test);
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
+  _getAllConnectedDevicedButtonPressed() async {
+    List<String> newConnectedDevices =
+        await _flutterSerialCommunicationPlugin.getAvailableDevices() ?? [];
     setState(() {
-      _platformVersion = platformVersion;
+      connectedDevices = newConnectedDevices;
     });
+  }
+
+  _connectButtonPressed(int index) async {
+    bool isConnectionSuccess =
+        await _flutterSerialCommunicationPlugin.connect(index, 115200);
+    debugPrint("Is Connection Success:  $isConnectionSuccess");
+  }
+
+  _disconnectButtonPressed() async {
+    await _flutterSerialCommunicationPlugin.disconnect();
+  }
+
+  _sendMessageButtonPressed() async {
+    bool isMessageSent = await _flutterSerialCommunicationPlugin
+        .write(Uint8List.fromList([0xBB, 0x00, 0x22, 0x00, 0x00, 0x22, 0x7E]));
+    debugPrint("Is Message Sent:  $isMessageSent");
   }
 
   @override
@@ -55,10 +70,45 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Flutter Serial Communication Example App'),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Text("Is Connected: $isConnected"),
+              const SizedBox(height: 16.0),
+              FilledButton(
+                onPressed: _getAllConnectedDevicedButtonPressed,
+                child: const Text("Get All Connected Devices"),
+              ),
+              const SizedBox(height: 16.0),
+              ...connectedDevices.asMap().entries.map((entry) {
+                return Row(
+                  children: [
+                    Flexible(child: Text(entry.value)),
+                    const SizedBox(width: 16.0),
+                    FilledButton(
+                      onPressed: () {
+                        _connectButtonPressed(entry.key);
+                      },
+                      child: const Text("Connect"),
+                    ),
+                  ],
+                );
+              }).toList(),
+              const SizedBox(height: 16.0),
+              FilledButton(
+                onPressed: isConnected ? _disconnectButtonPressed : null,
+                child: const Text("Disconnect"),
+              ),
+              const SizedBox(height: 16.0),
+              FilledButton(
+                onPressed: isConnected ? _sendMessageButtonPressed : null,
+                child: const Text("Send Message To Connected Device"),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_serial_communication_method_channel.dart';
@@ -43,5 +44,13 @@ abstract class FlutterSerialCommunicationPlatform extends PlatformInterface {
 
   Future<bool> write(Uint8List data) {
     throw UnimplementedError('write() has not been implemented.');
+  }
+
+  EventChannel getSerialMessageListener() {
+    throw UnimplementedError('getSerialMessageListener() has not been implemented.');
+  }
+
+  EventChannel getDeviceConnectionListener() {
+    throw UnimplementedError('getDeviceConnectionListener() has not been implemented.');
   }
 }

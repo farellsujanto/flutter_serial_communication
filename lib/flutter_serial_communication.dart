@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 import 'flutter_serial_communication_platform_interface.dart';
 
@@ -23,5 +23,13 @@ class FlutterSerialCommunication {
     final isSent =
         await FlutterSerialCommunicationPlatform.instance.write(data);
     return isSent;
+  }
+
+  EventChannel getSerialMessageListener() {
+    return FlutterSerialCommunicationPlatform.instance.getSerialMessageListener();
+  }
+
+  EventChannel getDeviceConnectionListener() {
+    return FlutterSerialCommunicationPlatform.instance.getDeviceConnectionListener();
   }
 }

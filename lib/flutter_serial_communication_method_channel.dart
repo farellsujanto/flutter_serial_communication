@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 
 import 'flutter_serial_communication_platform_interface.dart';
 
+const eventChannelID =
+    'id.farellsujanto.flutter_serial_communication.flutter_event_channel';
+
 /// An implementation of [FlutterSerialCommunicationPlatform] that uses method channels.
 class MethodChannelFlutterSerialCommunication
     extends FlutterSerialCommunicationPlatform {
@@ -42,8 +45,22 @@ class MethodChannelFlutterSerialCommunication
   }
 
   @override
-  Future<bool> write(Uint8List data) async {print(data);
+  Future<bool> write(Uint8List data) async {
     final isSent = await methodChannel.invokeMethod<bool>('write', data);
     return isSent ?? false;
+  }
+
+  @override
+  EventChannel getSerialMessageListener() {
+    const EventChannel stream =
+        EventChannel('$eventChannelID/serialStreamChannel');
+    return stream;
+  }
+
+  @override
+  EventChannel getDeviceConnectionListener() {
+    const EventChannel stream =
+        EventChannel('$eventChannelID/deviceConnectionStreamChannel');
+    return stream;
   }
 }

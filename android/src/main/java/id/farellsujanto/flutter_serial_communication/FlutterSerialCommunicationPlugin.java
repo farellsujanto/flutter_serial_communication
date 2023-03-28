@@ -33,19 +33,19 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 
 /** FlutterSerialCommunicationPlugin */
-public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware, SerialInputOutputManager.Listener, EventChannel.StreamHandler {
+public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware, SerialInputOutputManager.Listener {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
   private static final String INTENT_ACTION_GRANT_USB = BuildConfig.LIBRARY_PACKAGE_NAME + ".GRANT_USB";
   public static final String SERIAL_STREAM_CHANNEL = "id.farellsujanto.flutter_serial_communication.flutter_event_channel/serialStreamChannel";
+  public static final String DEVICE_CONNECTION_STREAM_CHANNEL = "id.farellsujanto.flutter_serial_communication.flutter_event_channel/deviceConnectionStreamChannel";
   private static final int WRITE_WAIT_MILLIS = 2000;
 
-  private EventChannel messageChannel;
-  private EventChannel.EventSink eventSink;
+  private SerialMessageHandler serialMessageHandler = new SerialMessageHandler();
+  private DeviceConnectionHandler deviceConnectionHandler = new DeviceConnectionHandler();
   private SerialInputOutputManager usbIoManager;
-
   private MethodChannel channel;
   private FlutterActivity activity;
   private BinaryMessenger binaryMessenger;
@@ -59,8 +59,8 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
     channel.setMethodCallHandler(this);
     binaryMessenger = flutterPluginBinding.getBinaryMessenger();
 
-    messageChannel = new EventChannel(binaryMessenger, SERIAL_STREAM_CHANNEL);
-    messageChannel.setStreamHandler(this);
+    new EventChannel(binaryMessenger, SERIAL_STREAM_CHANNEL).setStreamHandler(serialMessageHandler);
+    new EventChannel(binaryMessenger, DEVICE_CONNECTION_STREAM_CHANNEL).setStreamHandler(deviceConnectionHandler);
   }
 
   @Override
@@ -157,6 +157,7 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
         usbSerialPort.open(usbConnection);
         usbSerialPort.setParameters(baudRate, UsbSerialPort.DATABITS_8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
         connected = true;
+        deviceConnectionHandler.success(true);
         usbIoManager = new SerialInputOutputManager(usbSerialPort, this);
         usbIoManager.start();
 
@@ -171,6 +172,7 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
 
   public void disconnect() {
     connected = false;
+    deviceConnectionHandler.success(false);
     try {
       if(usbIoManager != null) {
         usbIoManager.setListener(null);
@@ -184,22 +186,11 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
 
   @Override
   public void onNewData(byte[] data) {
-    activity.runOnUiThread(() -> { eventSink.success(data); });
+    activity.runOnUiThread(() -> { serialMessageHandler.success(data); });
   }
 
   @Override
   public void onRunError(Exception e) {
     disconnect();
-  }
-
-  @Override
-  public void onListen(Object arguments, EventChannel.EventSink events) {
-    eventSink = events;
-  }
-
-  @Override
-  public void onCancel(Object arguments) {
-    eventSink = null;
-    messageChannel = null;
   }
 }
