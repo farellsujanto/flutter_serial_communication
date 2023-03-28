@@ -22,10 +22,12 @@ class FlutterSerialCommunication {
   }
 
   EventChannel getSerialMessageListener() {
-    return FlutterSerialCommunicationPlatform.instance.getSerialMessageListener();
+    return FlutterSerialCommunicationPlatform.instance
+        .getSerialMessageListener();
   }
 
   EventChannel getDeviceConnectionListener() {
-    return FlutterSerialCommunicationPlatform.instance.getDeviceConnectionListener();
+    return FlutterSerialCommunicationPlatform.instance
+        .getDeviceConnectionListener();
   }
 }

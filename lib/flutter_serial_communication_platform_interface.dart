@@ -9,7 +9,8 @@ abstract class FlutterSerialCommunicationPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static FlutterSerialCommunicationPlatform _instance = MethodChannelFlutterSerialCommunication();
+  static FlutterSerialCommunicationPlatform _instance =
+      MethodChannelFlutterSerialCommunication();
 
   /// The default instance of [FlutterSerialCommunicationPlatform] to use.
   ///
@@ -41,10 +42,12 @@ abstract class FlutterSerialCommunicationPlatform extends PlatformInterface {
   }
 
   EventChannel getSerialMessageListener() {
-    throw UnimplementedError('getSerialMessageListener() has not been implemented.');
+    throw UnimplementedError(
+        'getSerialMessageListener() has not been implemented.');
   }
 
   EventChannel getDeviceConnectionListener() {
-    throw UnimplementedError('getDeviceConnectionListener() has not been implemented.');
+    throw UnimplementedError(
+        'getDeviceConnectionListener() has not been implemented.');
   }
 }
