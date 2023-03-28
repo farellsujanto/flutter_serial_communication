@@ -2,9 +2,7 @@
 
 This library aims to ease Flutter Developers to do serial communcation with their peripherals without too much hassle.
 
-Notes: Doesn't require **root** access on Android
-
-**WARNING!!! THIS IS AN EARLY ACCESS LIBRARY. SOME BUGS MIGHT BE PRESENT THAT WILL BE A HINDRANCE TO YOUR PROJECT.**
+Currently supports **Android USB (OTG)** to communicate with Arduinos and other USB serial hardware on Android **WITHOUT** using **root access**.
 
 ## Installing
 

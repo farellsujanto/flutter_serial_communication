@@ -1,5 +1,5 @@
 name: flutter_serial_communication
-description: Flutter plugin for handling serial communication
+description: This library aims to ease Flutter Developers to do serial communcation with their peripherals without too much hassle. Currently supports Android USB (OTG) to communicate with Arduinos and other USB serial hardware on Android WITHOUT using root access.
 version: 0.0.1
 homepage: https://github.com/farellsujanto/flutter_serial_communication
 
