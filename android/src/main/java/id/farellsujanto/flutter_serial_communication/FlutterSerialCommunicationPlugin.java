@@ -3,6 +3,7 @@ package id.farellsujanto.flutter_serial_communication;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Build;
@@ -16,6 +17,7 @@ import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -69,6 +71,9 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
       case "getAvailableDevices":
         result.success(getAvailableDevices());
         break;
+      case "getDetailedAvailableDevices":
+        result.success(getDetailedAvailableDevices());
+        break;
       case "write":
         byte[] data = call.arguments();
         result.success(write(data));
@@ -120,6 +125,24 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
     return devices;
   }
 
+  public List<HashMap<String, String>> getDetailedAvailableDevices() {
+
+    UsbManager usbManager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
+    List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
+
+    List<HashMap<String, String>> deviceInfoList = new ArrayList<>(availableDrivers.size());
+
+    for (UsbSerialDriver driver : availableDrivers) {
+      UsbDevice device = driver.getDevice();
+      deviceInfoList.add(new DeviceInfo(device).toMap());
+    }
+
+    Log.d("DEVICE", deviceInfoList.toString());
+
+
+    return deviceInfoList;
+  }
+
   public boolean write(byte[] data) {
     try {
       usbSerialPort.write(data, WRITE_WAIT_MILLIS);
@@ -132,7 +155,6 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
   }
 
   public boolean connect(int index, int baudRate) {
-
     if (connected) {
       return false;
     }
