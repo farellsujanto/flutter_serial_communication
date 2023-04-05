@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_serial_communication/flutter_serial_communication.dart';
+import 'package:flutter_serial_communication/models/device_info.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final _flutterSerialCommunicationPlugin = FlutterSerialCommunication();
   bool isConnected = false;
-  List<String> connectedDevices = [];
+  List<DeviceInfo> connectedDevices = [];
 
   @override
   void initState() {
@@ -42,8 +42,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   _getAllConnectedDevicedButtonPressed() async {
-    List<String> newConnectedDevices =
-        await _flutterSerialCommunicationPlugin.getAvailableDevices() ?? [];
+    List<DeviceInfo> newConnectedDevices =
+        await _flutterSerialCommunicationPlugin.getDetailedAvailableDevices();
+    print(newConnectedDevices);
     setState(() {
       connectedDevices = newConnectedDevices;
     });
@@ -86,7 +87,7 @@ class _MyAppState extends State<MyApp> {
               ...connectedDevices.asMap().entries.map((entry) {
                 return Row(
                   children: [
-                    Flexible(child: Text(entry.value)),
+                    Flexible(child: Text(entry.value.productName)),
                     const SizedBox(width: 16.0),
                     FilledButton(
                       onPressed: () {
