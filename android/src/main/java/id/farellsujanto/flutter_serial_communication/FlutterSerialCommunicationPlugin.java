@@ -125,8 +125,7 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
     return devices;
   }
 
-  public List<HashMap<String, String>> getDetailedAvailableDevices() {
-
+  public String getDetailedAvailableDevices() {
     UsbManager usbManager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
     List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
 
@@ -137,10 +136,7 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
       deviceInfoList.add(new DeviceInfo(device).toMap());
     }
 
-    Log.d("DEVICE", deviceInfoList.toString());
-
-
-    return deviceInfoList;
+    return deviceInfoList.toString();
   }
 
   public boolean write(byte[] data) {

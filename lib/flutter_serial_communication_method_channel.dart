@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_serial_communication/models/device_info.dart';
 
 import 'flutter_serial_communication_platform_interface.dart';
 
@@ -18,6 +21,24 @@ class MethodChannelFlutterSerialCommunication
     final availableDevices =
         await methodChannel.invokeMethod<List<dynamic>>('getAvailableDevices');
     return availableDevices?.map((e) => e.toString()).toList();
+  }
+
+  @override
+  Future<List<DeviceInfo>> getDetailedAvailableDevices() async {
+    final availableDevices = await methodChannel
+        .invokeMethod<String?>('getDetailedAvailableDevices');
+
+    if (availableDevices == null || availableDevices == '[]') {
+      return [];
+    }
+
+    final cleanedString = availableDevices.replaceAll('=', ':');
+    final List<dynamic> rawDataList = jsonDecode(cleanedString);
+
+    List<DeviceInfo> deviceInfos = [];
+    deviceInfos = rawDataList.map((e) => DeviceInfo.fromMap(e)).toList();
+
+    return deviceInfos;
   }
 
   @override

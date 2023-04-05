@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_serial_communication/models/device_info.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_serial_communication_method_channel.dart';
@@ -27,6 +28,11 @@ abstract class FlutterSerialCommunicationPlatform extends PlatformInterface {
 
   Future<List<String>?> getAvailableDevices() {
     throw UnimplementedError('getAvailableDevices() has not been implemented.');
+  }
+
+  Future<List<DeviceInfo>> getDetailedAvailableDevices() async {
+    throw UnimplementedError(
+        'getDetailedAvailableDevices() has not been implemented.');
   }
 
   Future<bool> connect(int index, int baudRate) {
