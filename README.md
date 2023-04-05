@@ -55,6 +55,24 @@ final _flutterSerialCommunicationPlugin = FlutterSerialCommunication();
 List<String> newConnectedDevices = await _flutterSerialCommunicationPlugin.getAvailableDevices() ?? [];
 ```
 
+- **Get All Available Devices (Detailed):**
+  - Requires: none
+  - Returns: Future<List\<DeviceInfo>>
+```dart
+final _flutterSerialCommunicationPlugin = FlutterSerialCommunication();
+
+List<DeviceInfo> newConnectedDevices = await _flutterSerialCommunicationPlugin.getAvailableDevices();
+
+// DeviceInfo
+// int? deviceId;
+// String version;
+// String deviceName;
+// String manufacturerName;
+// String productName;
+// int? productId;
+// String serialNumber;
+```
+
 - **Connect:**
   - Requires: index(int), baudRate(int)
   - Returns: Future\<bool>

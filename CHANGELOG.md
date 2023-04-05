@@ -1,3 +1,6 @@
+## 0.1.2
+- Add `getAvailableDevices`
+
 ## 0.1.1
 - Fix typo in document
 
