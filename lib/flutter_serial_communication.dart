@@ -4,17 +4,13 @@ import 'package:flutter_serial_communication/models/device_info.dart';
 import 'flutter_serial_communication_platform_interface.dart';
 
 class FlutterSerialCommunication {
-  Future<List<String>?> getAvailableDevices() {
+  Future<List<DeviceInfo>> getAvailableDevices() {
     return FlutterSerialCommunicationPlatform.instance.getAvailableDevices();
   }
 
-  Future<List<DeviceInfo>> getDetailedAvailableDevices() async {
+  Future<bool> connect(DeviceInfo deviceInfo, int baudRate) async {
     return FlutterSerialCommunicationPlatform.instance
-        .getDetailedAvailableDevices();
-  }
-
-  Future<bool> connect(int index, int baudRate) async {
-    return FlutterSerialCommunicationPlatform.instance.connect(index, baudRate);
+        .connect(deviceInfo, baudRate);
   }
 
   Future<void> disconnect() async {

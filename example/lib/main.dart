@@ -43,16 +43,15 @@ class _MyAppState extends State<MyApp> {
 
   _getAllConnectedDevicedButtonPressed() async {
     List<DeviceInfo> newConnectedDevices =
-        await _flutterSerialCommunicationPlugin.getDetailedAvailableDevices();
-    print(newConnectedDevices);
+        await _flutterSerialCommunicationPlugin.getAvailableDevices();
     setState(() {
       connectedDevices = newConnectedDevices;
     });
   }
 
-  _connectButtonPressed(int index) async {
+  _connectButtonPressed(DeviceInfo deviceInfo) async {
     bool isConnectionSuccess =
-        await _flutterSerialCommunicationPlugin.connect(index, 115200);
+        await _flutterSerialCommunicationPlugin.connect(deviceInfo, 115200);
     debugPrint("Is Connection Success:  $isConnectionSuccess");
   }
 
@@ -91,7 +90,7 @@ class _MyAppState extends State<MyApp> {
                     const SizedBox(width: 16.0),
                     FilledButton(
                       onPressed: () {
-                        _connectButtonPressed(entry.key);
+                        _connectButtonPressed(entry.value);
                       },
                       child: const Text("Connect"),
                     ),

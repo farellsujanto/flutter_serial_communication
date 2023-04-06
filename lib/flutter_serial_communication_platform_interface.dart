@@ -26,16 +26,11 @@ abstract class FlutterSerialCommunicationPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<List<String>?> getAvailableDevices() {
+  Future<List<DeviceInfo>> getAvailableDevices() {
     throw UnimplementedError('getAvailableDevices() has not been implemented.');
   }
 
-  Future<List<DeviceInfo>> getDetailedAvailableDevices() async {
-    throw UnimplementedError(
-        'getDetailedAvailableDevices() has not been implemented.');
-  }
-
-  Future<bool> connect(int index, int baudRate) {
+  Future<bool> connect(DeviceInfo deviceInfo, int baudRate) {
     throw UnimplementedError('connect() has not been implemented.');
   }
 

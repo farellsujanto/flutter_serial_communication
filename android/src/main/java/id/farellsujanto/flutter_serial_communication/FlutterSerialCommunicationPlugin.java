@@ -52,6 +52,7 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
   private FlutterActivity activity;
   private BinaryMessenger binaryMessenger;
   private UsbSerialPort usbSerialPort;
+  private  UsbManager usbManager;
 
   private boolean connected = false;
 
@@ -68,27 +69,29 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
     switch (call.method) {
-      case "getAvailableDevices":
-        result.success(getAvailableDevices());
+      case "getAvailableDevices": {
+        result.success(getConvertedAvailableDevices(getAvailableDevices()));
         break;
-      case "getDetailedAvailableDevices":
-        result.success(getDetailedAvailableDevices());
-        break;
-      case "write":
+      }
+      case "write": {
         byte[] data = call.arguments();
         result.success(write(data));
         break;
-      case "connect":
+      }
+      case "connect": {
         Map<String, String> connectArgs = call.arguments();
-        int index = Integer.valueOf(connectArgs.get("index"));
+        String name = connectArgs.get("name");
         int baudRate = Integer.valueOf(connectArgs.get("baudRate"));
-        result.success(connect(index, baudRate));
+        result.success(connect(name, baudRate));
         break;
-      case "disconnect":
+      }
+      case "disconnect": {
         disconnect();
         break;
-      default:
+      }
+      default: {
         result.notImplemented();
+      }
     }
   }
 
@@ -100,6 +103,7 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
     activity = (FlutterActivity) binding.getActivity();
+    usbManager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
   }
 
   @Override
@@ -113,30 +117,27 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
   @Override
   public void onDetachedFromActivity() {}
 
-  public List<String> getAvailableDevices() {
-    UsbManager usbManager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
+  public List<DeviceInfo> getAvailableDevices() {
     List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
 
-    List<String> devices = new ArrayList<>(availableDrivers.size());
-    for (UsbSerialDriver driver : availableDrivers) {
-      devices.add(driver != null ? driver.toString() : null);
-    }
-
-    return devices;
-  }
-
-  public String getDetailedAvailableDevices() {
-    UsbManager usbManager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
-    List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
-
-    List<HashMap<String, String>> deviceInfoList = new ArrayList<>(availableDrivers.size());
+    List<DeviceInfo> deviceInfoList = new ArrayList<>(availableDrivers.size());
 
     for (UsbSerialDriver driver : availableDrivers) {
       UsbDevice device = driver.getDevice();
-      deviceInfoList.add(new DeviceInfo(device).toMap());
+      deviceInfoList.add(new DeviceInfo(device));
     }
 
-    return deviceInfoList.toString();
+    return deviceInfoList;
+  }
+
+  public String getConvertedAvailableDevices(List<DeviceInfo> deviceInfoList) {
+    List<Map<String, String>> convertedDeviceInfoList = new ArrayList<>(deviceInfoList.size());
+
+    for (DeviceInfo deviceInfo : deviceInfoList) {
+      convertedDeviceInfoList.add(deviceInfo.toMap());
+    }
+
+    return convertedDeviceInfoList.toString();
   }
 
   public boolean write(byte[] data) {
@@ -150,20 +151,30 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
     return false;
   }
 
-  public boolean connect(int index, int baudRate) {
+  public boolean connect(String name, int baudRate) {
     if (connected) {
       return false;
     }
 
-    UsbManager usbManager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
     List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
+    List<DeviceInfo> availableDevices = getAvailableDevices();
+    if (availableDrivers.size() == 0 || availableDevices.size() == 0) {
+      return false;
+    }
 
-    if (availableDrivers.size() == 0) {
+    int index = -1;
+    for (int i = 0; i < availableDevices.size(); i++) {
+      if (availableDevices.get(i).deviceName.equals(name)) {
+        index = i;
+        break;
+      }
+    }
+
+    if (index == -1) {
       return false;
     }
 
     UsbSerialDriver driver = availableDrivers.get(index);
-
     if(!usbManager.hasPermission(driver.getDevice())) {
       int flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_MUTABLE : 0;
       PendingIntent usbPermissionIntent = PendingIntent.getBroadcast(activity, 0, new Intent(INTENT_ACTION_GRANT_USB), flags);
@@ -186,6 +197,7 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
       }
     }
     return false;
+
   }
 
   public void disconnect() {
