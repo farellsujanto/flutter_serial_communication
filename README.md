@@ -30,7 +30,7 @@ flutter pub add flutter_serial_communication
 or by adding dependencies to your package's pubspec.yaml then run `dart pub get`
 ```
 dependencies:
-  flutter_serial_communication: 0.2.0
+  flutter_serial_communication: 0.2.1
 ```
 
 **4.** Import it in your .dart file
