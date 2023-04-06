@@ -1,3 +1,7 @@
+## 0.2.0 BREAKING
+- Change `getAvailableDevices` to detailed device info version
+- Change `connect` to require `DeviceInfo` from `getAvailableDevices`
+
 ## 0.1.2
 - Add `getAvailableDevices`
 

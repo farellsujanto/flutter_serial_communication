@@ -30,7 +30,7 @@ flutter pub add flutter_serial_communication
 or by adding dependencies to your package's pubspec.yaml then run `dart pub get`
 ```
 dependencies:
-  flutter_serial_communication: 0.1.1
+  flutter_serial_communication: 0.2.0
 ```
 
 **4.** Import it in your .dart file
@@ -47,46 +47,23 @@ import 'package:flutter_serial_communication/flutter_serial_communication.dart';
 ## Functions
 
 - **Get All Available Devices:**
-  - Requires: none
-  - Returns: Future<List\<String>>
 ```dart
 final _flutterSerialCommunicationPlugin = FlutterSerialCommunication();
 
-List<String> newConnectedDevices = await _flutterSerialCommunicationPlugin.getAvailableDevices() ?? [];
+List<DeviceInfo> availableDevices = await _flutterSerialCommunicationPlugin.getAvailableDevices();
 ```
 
-- **Get All Available Devices (Detailed):**
-  - Requires: none
-  - Returns: Future<List\<DeviceInfo>>
-```dart
-final _flutterSerialCommunicationPlugin = FlutterSerialCommunication();
-
-List<DeviceInfo> newConnectedDevices = await _flutterSerialCommunicationPlugin.getAvailableDevices();
-
-// DeviceInfo
-// int? deviceId;
-// String version;
-// String deviceName;
-// String manufacturerName;
-// String productName;
-// int? productId;
-// String serialNumber;
-```
 
 - **Connect:**
-  - Requires: index(int), baudRate(int)
-  - Returns: Future\<bool>
 ```dart
 final _flutterSerialCommunicationPlugin = FlutterSerialCommunication();
 
-int index = 0; // Index of List<String> from getAvailableDevices()
+DeviceInfo device = DeviceInfo(); // DeviceInfo from getAvailableDevices()
 int baudRate = 0; // Your device's baud rate
-bool isConnectionSuccess = await _flutterSerialCommunicationPlugin.connect(index, baudRate);
+bool isConnectionSuccess = await _flutterSerialCommunicationPlugin.connect(device, baudRate);
 ```
 
 - **Disconnect:**
-  - Requires: none
-  - Returns: Future\<void>
 ```dart
 final _flutterSerialCommunicationPlugin = FlutterSerialCommunication();
 
@@ -94,8 +71,7 @@ await _flutterSerialCommunicationPlugin.disconnect();
 ```
 
 - **Write:**
-  - Requires: data(Uint8List)
-  - Returns: Future\<bool>
+
 ```dart
 final _flutterSerialCommunicationPlugin = FlutterSerialCommunication();
 
@@ -103,8 +79,6 @@ bool isMessageSent = await _flutterSerialCommunicationPlugin.write(Uint8List.fro
 debugPrint("Is Message Sent:  $isMessageSent");
 ```
 - **Read (Listener):**
-  - Requires: none
-  - Returns: EventChannel
 ```dart
 final _flutterSerialCommunicationPlugin = FlutterSerialCommunication();
 
@@ -115,8 +89,6 @@ eventChannel.receiveBroadcastStream().listen((event) {
 ```
 
 - **Device Connection Status (Listener):**
-  - Requires: none
-  - Returns: EventChannel
 ```dart
 final _flutterSerialCommunicationPlugin = FlutterSerialCommunication();
 
