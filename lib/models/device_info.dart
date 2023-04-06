@@ -76,18 +76,4 @@ class DeviceInfo {
   String toString() {
     return 'DeviceInfo(deviceId: $deviceId, version: $version, deviceName: $deviceName, manufacturerName: $manufacturerName, productName: $productName, productId: $productId, serialNumber: $serialNumber)';
   }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is DeviceInfo &&
-        other.deviceId == deviceId &&
-        other.version == version &&
-        other.deviceName == deviceName &&
-        other.manufacturerName == manufacturerName &&
-        other.productName == productName &&
-        other.productId == productId &&
-        other.serialNumber == serialNumber;
-  }
 }
