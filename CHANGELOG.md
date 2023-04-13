@@ -1,3 +1,6 @@
+## 0.2.2
+- Add `vendorId` to `DeviceInfo`
+
 ## 0.2.1
 - Remove equal operator from `DeviceInfo`
 
