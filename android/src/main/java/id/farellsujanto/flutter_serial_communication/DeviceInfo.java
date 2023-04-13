@@ -45,6 +45,7 @@ public class DeviceInfo {
         hm.put("\"deviceId\"", "\"" + this.deviceId + "\"");
         hm.put("\"deviceName\"", "\"" + this.deviceName + "\"");
         hm.put("\"productId\"", "\"" + this.productId + "\"");
+        hm.put("\"vendorId\"", "\"" + this.vendorId + "\"");
         hm.put("\"manufacturerName\"", "\"" + this.manufacturerName + "\"");
         hm.put("\"productName\"", "\"" + this.productName + "\"");
         hm.put("\"serialNumber\"", "\"" + this.serialNumber + "\"");

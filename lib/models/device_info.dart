@@ -7,6 +7,7 @@ class DeviceInfo {
   final String manufacturerName;
   final String productName;
   final int? productId;
+  final int? vendorId;
   final String serialNumber;
 
   DeviceInfo({
@@ -16,6 +17,7 @@ class DeviceInfo {
     this.manufacturerName = '',
     this.productName = '',
     this.productId = 0,
+    this.vendorId = 0,
     this.serialNumber = '',
   });
 
@@ -26,6 +28,7 @@ class DeviceInfo {
     String? manufacturerName,
     String? productName,
     int? productId,
+    int? vendorId,
     String? serialNumber,
   }) {
     return DeviceInfo(
@@ -35,6 +38,7 @@ class DeviceInfo {
       manufacturerName: manufacturerName ?? this.manufacturerName,
       productName: productName ?? this.productName,
       productId: productId ?? this.productId,
+      vendorId: vendorId ?? this.vendorId,
       serialNumber: serialNumber ?? this.serialNumber,
     );
   }
@@ -47,6 +51,7 @@ class DeviceInfo {
       'manufacturerName': manufacturerName,
       'productName': productName,
       'productId': productId,
+      'vendorId': vendorId,
       'serialNumber': serialNumber,
     };
   }
@@ -62,6 +67,7 @@ class DeviceInfo {
       productName: map['productName'] != 'null' ? map['productName'] ?? '' : '',
       productId:
           map['productId'] != 'null' ? int.parse(map['productId']) : null,
+      vendorId: map['vendorId'] != 'null' ? int.parse(map['vendorId']) : null,
       serialNumber:
           map['serialNumber'] != 'null' ? map['serialNumber'] ?? '' : '',
     );
@@ -74,6 +80,6 @@ class DeviceInfo {
 
   @override
   String toString() {
-    return 'DeviceInfo(deviceId: $deviceId, version: $version, deviceName: $deviceName, manufacturerName: $manufacturerName, productName: $productName, productId: $productId, serialNumber: $serialNumber)';
+    return 'DeviceInfo(deviceId: $deviceId, version: $version, deviceName: $deviceName, manufacturerName: $manufacturerName, productName: $productName, productId: $productId, vendorId: $vendorId, serialNumber: $serialNumber)';
   }
 }
