@@ -6,34 +6,17 @@ Currently supports **Android USB (OTG)** to communicate with Arduinos and other 
 
 ## Installing
 
-### Android
-**1.** Add jitpack.io repository to your build.gradle (root)
-```gradle
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
-**2.** Add library to Android dependencies (root build gradle / app build gradle)
-```gradle
-dependencies {
-    ...
-    implementation 'com.github.mik3y:usb-serial-for-android:3.5.1'
-}
-```
-**3.** Install it to your flutter project
+**1.** Install it to your flutter project
 ```
 flutter pub add flutter_serial_communication
 ```
 or by adding dependencies to your package's pubspec.yaml then run `dart pub get`
 ```
 dependencies:
-  flutter_serial_communication: 0.2.2
+  flutter_serial_communication: 0.2.3
 ```
 
-**4.** Import it in your .dart file
+**2.** Import it in your .dart file
 ```dart
 import 'package:flutter_serial_communication/flutter_serial_communication.dart';
 ```

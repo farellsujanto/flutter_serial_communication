@@ -1,3 +1,6 @@
+## 0.2.3
+- Change gradle implementation to api, so updating build gradle wont be needed when installing the library
+
 ## 0.2.2
 - Add `vendorId` to `DeviceInfo`
 
