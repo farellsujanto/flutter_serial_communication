@@ -51,4 +51,12 @@ abstract class FlutterSerialCommunicationPlatform extends PlatformInterface {
     throw UnimplementedError(
         'getDeviceConnectionListener() has not been implemented.');
   }
+
+  Future<void> setDTR(bool set) {
+    throw UnimplementedError('setDTR() has not been implemented.');
+  }
+  
+  Future<void> setRTS(bool set) {
+    throw UnimplementedError('setRTS() has not been implemented.');
+  }
 }

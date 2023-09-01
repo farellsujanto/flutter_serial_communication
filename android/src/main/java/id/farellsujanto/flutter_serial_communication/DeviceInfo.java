@@ -2,11 +2,9 @@ package id.farellsujanto.flutter_serial_communication;
 
 import android.hardware.usb.UsbDevice;
 import android.os.Build;
-
 import java.util.HashMap;
-import java.util.Map;
 
-public class DeviceInfo {
+class DeviceInfo {
     int deviceId;
     String version;
     String deviceName;

@@ -3,6 +3,7 @@ package id.farellsujanto.flutter_serial_communication;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
@@ -17,10 +18,8 @@ import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import io.flutter.Log;
 import io.flutter.embedding.android.FlutterActivity;
@@ -34,36 +33,43 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 
-/** FlutterSerialCommunicationPlugin */
+/**
+ * FlutterSerialCommunicationPlugin
+ */
 public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware, SerialInputOutputManager.Listener {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
-  private static final String INTENT_ACTION_GRANT_USB = BuildConfig.LIBRARY_PACKAGE_NAME + ".GRANT_USB";
-  public static final String SERIAL_STREAM_CHANNEL = "id.farellsujanto.flutter_serial_communication.flutter_event_channel/serialStreamChannel";
-  public static final String DEVICE_CONNECTION_STREAM_CHANNEL = "id.farellsujanto.flutter_serial_communication.flutter_event_channel/deviceConnectionStreamChannel";
-  private static final int WRITE_WAIT_MILLIS = 2000;
-
   private SerialMessageHandler serialMessageHandler = new SerialMessageHandler();
   private DeviceConnectionHandler deviceConnectionHandler = new DeviceConnectionHandler();
+
   private SerialInputOutputManager usbIoManager;
   private MethodChannel channel;
-  private FlutterActivity activity;
   private BinaryMessenger binaryMessenger;
   private UsbSerialPort usbSerialPort;
-  private  UsbManager usbManager;
+  private UsbManager usbManager;
+  private UsbSerialDriver driver;
 
+  private Result connectResult;
+  private int write_wait_millis = 2000;
+  private int baudRate = 9600;
   private boolean connected = false;
+  private USBGrantReceiver usbGrantReceiver = null;
+
+  private FlutterActivity activity;
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_serial_communication");
+    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(),
+        "flutter_serial_communication");
+
     channel.setMethodCallHandler(this);
     binaryMessenger = flutterPluginBinding.getBinaryMessenger();
 
-    new EventChannel(binaryMessenger, SERIAL_STREAM_CHANNEL).setStreamHandler(serialMessageHandler);
-    new EventChannel(binaryMessenger, DEVICE_CONNECTION_STREAM_CHANNEL).setStreamHandler(deviceConnectionHandler);
+    new EventChannel(binaryMessenger,
+        PluginConfig.SERIAL_STREAM_CHANNEL)
+        .setStreamHandler(serialMessageHandler);
+
+    new EventChannel(binaryMessenger,
+        PluginConfig.DEVICE_CONNECTION_STREAM_CHANNEL)
+        .setStreamHandler(deviceConnectionHandler);
   }
 
   @Override
@@ -78,21 +84,57 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
         result.success(write(data));
         break;
       }
+      case "setRTS": {
+        setRTS(call.arguments(), result);
+        break;
+      }
+      case "setDTR": {
+        setDTR(call.arguments(), result);
+        break;
+      }
       case "connect": {
-        Map<String, String> connectArgs = call.arguments();
-        String name = connectArgs.get("name");
-        int baudRate = Integer.valueOf(connectArgs.get("baudRate"));
-        result.success(connect(name, baudRate));
+        String name = call.argument("name");
+        baudRate = call.argument("baudRate");
+
+        connectResult = result;
+        connect(name);
         break;
       }
       case "disconnect": {
         disconnect();
+        result.success(true);
         break;
       }
       default: {
         result.notImplemented();
       }
     }
+  }
+
+  void setRTS(boolean set, Result result) {
+    boolean success = false;
+    if(usbSerialPort != null) {
+      try {
+        usbSerialPort.setRTS(set);
+        success = true;
+      } catch (IOException exception) {
+
+      }
+    }
+    result.success(success);
+  }
+
+  void setDTR(boolean set, Result result) {
+    boolean success = false;
+    if(usbSerialPort != null) {
+      try {
+        usbSerialPort.setDTR(set);
+        success = true;
+      } catch (IOException exception) {
+
+      }
+    }
+    result.success(success);
   }
 
   @Override
@@ -117,7 +159,7 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
   @Override
   public void onDetachedFromActivity() {}
 
-  public List<DeviceInfo> getAvailableDevices() {
+  private List<DeviceInfo> getAvailableDevices() {
     List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
 
     List<DeviceInfo> deviceInfoList = new ArrayList<>(availableDrivers.size());
@@ -130,7 +172,7 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
     return deviceInfoList;
   }
 
-  public String getConvertedAvailableDevices(List<DeviceInfo> deviceInfoList) {
+  private String getConvertedAvailableDevices(List<DeviceInfo> deviceInfoList) {
     List<Map<String, String>> convertedDeviceInfoList = new ArrayList<>(deviceInfoList.size());
 
     for (DeviceInfo deviceInfo : deviceInfoList) {
@@ -140,9 +182,9 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
     return convertedDeviceInfoList.toString();
   }
 
-  public boolean write(byte[] data) {
+  private boolean write(byte[] data) {
     try {
-      usbSerialPort.write(data, WRITE_WAIT_MILLIS);
+      usbSerialPort.write(data, write_wait_millis);
       return true;
     } catch (IOException e) {
       Log.e("Error Sending", e.getMessage());
@@ -151,15 +193,18 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
     return false;
   }
 
-  public boolean connect(String name, int baudRate) {
+  private void connect(String name) {
     if (connected) {
-      return false;
+      handleConnectResult(false);
+      return;
     }
 
-    List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
+    List<UsbSerialDriver> availableDrivers = UsbSerialProber
+        .getDefaultProber().findAllDrivers(usbManager);
     List<DeviceInfo> availableDevices = getAvailableDevices();
     if (availableDrivers.size() == 0 || availableDevices.size() == 0) {
-      return false;
+      handleConnectResult(false);
+      return;
     }
 
     int index = -1;
@@ -170,57 +215,98 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
       }
     }
 
-    if (index == -1) {
-      return false;
+    if (index < 0) {
+      handleConnectResult(false);
+      return;
     }
 
-    UsbSerialDriver driver = availableDrivers.get(index);
-    if(!usbManager.hasPermission(driver.getDevice())) {
-      int flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_MUTABLE : 0;
-      PendingIntent usbPermissionIntent = PendingIntent.getBroadcast(activity, 0, new Intent(INTENT_ACTION_GRANT_USB), flags);
-      usbManager.requestPermission(driver.getDevice(), usbPermissionIntent);
+    driver = availableDrivers.get(index);
+
+    if (usbManager.hasPermission(driver.getDevice()) == false) {
+      int flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+          ? PendingIntent.FLAG_MUTABLE : 0;
+      usbGrantReceiver = new USBGrantReceiver(this);
+      activity.registerReceiver(
+          usbGrantReceiver,
+          new IntentFilter(PluginConfig.INTENT_ACTION_GRANT_USB));
+      PendingIntent usbGrantIntent = PendingIntent.getBroadcast(activity,
+          0,
+          new Intent(PluginConfig.INTENT_ACTION_GRANT_USB), flags);
+
+      usbManager.requestPermission(driver.getDevice(), usbGrantIntent);
     } else {
-      try {
-        usbSerialPort = driver.getPorts().get(0);
-        UsbDeviceConnection usbConnection = usbManager.openDevice(driver.getDevice());
-        usbSerialPort.open(usbConnection);
-        usbSerialPort.setParameters(baudRate, UsbSerialPort.DATABITS_8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
-        connected = true;
-        deviceConnectionHandler.success(true);
-        usbIoManager = new SerialInputOutputManager(usbSerialPort, this);
-        usbIoManager.start();
-
-        return true;
-      } catch (IOException e) {
-        e.printStackTrace();
-        disconnect();
-      }
+      openPort();
     }
-    return false;
-
   }
 
-  public void disconnect() {
+  public void openPort() {
+    try {
+      usbSerialPort = driver.getPorts().get(0);
+      usbSerialPort.getControlLines();
+
+      UsbDeviceConnection usbConnection = usbManager.openDevice(driver.getDevice());
+      usbSerialPort.open(usbConnection);
+
+      usbSerialPort.setParameters(baudRate, UsbSerialPort.DATABITS_8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+      connected = true;
+      deviceConnectionHandler.success(true);
+      usbIoManager = new SerialInputOutputManager(usbSerialPort, this);
+      usbIoManager.start();
+
+      handleConnectResult(true);
+      return;
+    } catch (IOException e) {
+      e.printStackTrace();
+      disconnect();
+    }
+
+    handleConnectResult(false);
+  }
+
+  public void onUsbPermissionDenied() {
+    handleConnectResult(false);
+  }
+
+  private void disconnect() {
     connected = false;
     deviceConnectionHandler.success(false);
     try {
-      if(usbIoManager != null) {
+      if (usbIoManager != null) {
         usbIoManager.setListener(null);
         usbIoManager.stop();
       }
       usbIoManager = null;
-      usbSerialPort.close();
-    } catch (IOException ignored) {}
-    usbSerialPort = null;
+      if(usbSerialPort.isOpen()) {
+       usbSerialPort.close();
+      }
+    } catch (IOException ignored) {
+    }
   }
+
+  private void handleConnectResult(boolean value) {
+    if(connectResult != null) {
+      connectResult.success(value);
+      connectResult = null;
+    }
+    if(usbGrantReceiver != null) {
+      activity.unregisterReceiver(usbGrantReceiver);
+      usbGrantReceiver = null;
+    }
+  }
+
+
 
   @Override
   public void onNewData(byte[] data) {
-    activity.runOnUiThread(() -> { serialMessageHandler.success(data); });
+    activity.runOnUiThread(() -> {
+      serialMessageHandler.success(data);
+    });
   }
 
   @Override
   public void onRunError(Exception e) {
-    disconnect();
+    activity.runOnUiThread(() -> {
+      disconnect();
+    });
   }
 }
