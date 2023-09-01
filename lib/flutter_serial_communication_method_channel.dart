@@ -42,9 +42,9 @@ class MethodChannelFlutterSerialCommunication
   /// returns [bool] to indicate whether the connection is success or not
   @override
   Future<bool> connect(DeviceInfo deviceInfo, int baudRate) async {
-    final connectionData = <String, String>{
-      'name': deviceInfo.deviceName.toString(),
-      'baudRate': baudRate.toString(),
+    final connectionData = <String, dynamic>{
+      'name': deviceInfo.deviceName,
+      'baudRate': baudRate,
     };
 
     final isConnected =
@@ -79,5 +79,19 @@ class MethodChannelFlutterSerialCommunication
     const EventChannel stream =
         EventChannel('$eventChannelID/deviceConnectionStreamChannel');
     return stream;
+  }
+
+  /// Set usb DTR
+  @override
+  Future<bool> setDTR(bool set) async {
+    final isSent = await methodChannel.invokeMethod<bool>('setDTR', set);
+    return isSent ?? false;
+  }
+
+  /// Set usb RTS
+  @override
+  Future<bool> setRTS(bool set) async {
+    final isSent = await methodChannel.invokeMethod<bool>('setRTS', set);
+    return isSent ?? false;
   }
 }

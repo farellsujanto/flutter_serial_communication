@@ -32,4 +32,12 @@ class FlutterSerialCommunication {
     return FlutterSerialCommunicationPlatform.instance
         .getDeviceConnectionListener();
   }
+
+  Future<void> setDTR(bool set) async {
+    return FlutterSerialCommunicationPlatform.instance.setDTR(set);
+  }
+
+  Future<void> setRTS(bool set) async {
+    return FlutterSerialCommunicationPlatform.instance.setRTS(set);
+  }
 }

@@ -3,7 +3,7 @@ package id.farellsujanto.flutter_serial_communication;
 import io.flutter.Log;
 import io.flutter.plugin.common.EventChannel;
 
-public class DeviceConnectionHandler implements EventChannel.StreamHandler {
+class DeviceConnectionHandler implements EventChannel.StreamHandler {
 
     private EventChannel.EventSink eventSink;
 
