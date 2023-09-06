@@ -1,3 +1,10 @@
+## 0.2.4
+- Implementations for setting usb DTR and RTS
+- Connect device after permission is granted
+- Fix for APP crash and force close when serial status connected and cable detached from device [#6](https://github.com/farellsujanto/flutter_serial_communication/issues/6)
+
+Thanks to [DominikStarke](https://github.com/DominikStarke) for the fix!
+
 ## 0.2.3
 - Change gradle implementation to api, so updating build gradle wont be needed when installing the library
 

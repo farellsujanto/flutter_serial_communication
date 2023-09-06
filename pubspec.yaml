@@ -1,10 +1,10 @@
 name: flutter_serial_communication
 description: Library for serial communication. Currently supports Android USB (OTG) to communicate with Arduinos and other USB serial hardware on Android WITHOUT using root access.
-version: 0.2.3
+version: 0.2.4
 homepage: https://github.com/farellsujanto/flutter_serial_communication
 
 environment:
-  sdk: '>=2.19.5 <3.0.0'
+  sdk: '>=2.19.5 <4.0.0'
   flutter: ">=2.5.0"
 
 dependencies:
