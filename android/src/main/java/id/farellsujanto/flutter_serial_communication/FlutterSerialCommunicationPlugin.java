@@ -152,7 +152,7 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
     boolean success = false;
     if(usbSerialPort != null) {
       try {
-        usbSerialPort.setParameters(baudRate, databits, stopbits, parity);
+        usbSerialPort.setParameters(baudRate, dataBits, stopBits, parity);
         success = true;
       } catch (IOException exception) {
 
