@@ -40,4 +40,10 @@ class FlutterSerialCommunication {
   Future<void> setRTS(bool set) async {
     return FlutterSerialCommunicationPlatform.instance.setRTS(set);
   }
+
+  Future<void> setParameters(
+      int baudRate, int dataBits, int stopBits, int parity) async {
+    return FlutterSerialCommunicationPlatform.instance
+        .setParameters(baudRate, dataBits, stopBits, parity);
+  }
 }

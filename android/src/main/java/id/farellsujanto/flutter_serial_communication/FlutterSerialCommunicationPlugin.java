@@ -50,6 +50,9 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
   private Result connectResult;
   private int write_wait_millis = 2000;
   private int baudRate = 9600;
+  private int databits = UsbSerialPort.DATABITS_8;
+  private int stopbits = UsbSerialPort.STOPBITS_1;
+  private int parity = UsbSerialPort.PARITY_NONE;
   private boolean connected = false;
   private USBGrantReceiver usbGrantReceiver = null;
 
@@ -92,6 +95,10 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
         setDTR(call.arguments(), result);
         break;
       }
+      case "setParameters": {
+        setParameters(call.arguments(), result);
+        break;
+      }
       case "connect": {
         String name = call.argument("name");
         baudRate = call.argument("baudRate");
@@ -129,6 +136,19 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
     if(usbSerialPort != null) {
       try {
         usbSerialPort.setDTR(set);
+        success = true;
+      } catch (IOException exception) {
+
+      }
+    }
+    result.success(success);
+  }
+
+  void setParameters() {
+    boolean success = false;
+    if(usbSerialPort != null) {
+      try {
+        usbSerialPort.setParameters(baudRate, databits, stopbits, parity);
         success = true;
       } catch (IOException exception) {
 
