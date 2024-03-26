@@ -100,7 +100,7 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
         dataBits = call.argument("dataBits");
         stopBits = call.argument("stopBits");
         parity = call.argument("parity");
-        setParameters(baudRate, databits, stopbits, parity, result);
+        setParameters(baudRate, dataBits, stopBits, parity, result);
         break;
       }
       case "connect": {
