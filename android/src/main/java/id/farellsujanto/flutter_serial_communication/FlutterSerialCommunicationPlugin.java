@@ -55,6 +55,8 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
   private int parity = UsbSerialPort.PARITY_NONE;
   private boolean connected = false;
   private USBGrantReceiver usbGrantReceiver = null;
+  private boolean purgeWriteBuffers = false;
+  private boolean purgeReadBuffers = false;
 
   private FlutterActivity activity;
 
@@ -116,6 +118,12 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
         result.success(true);
         break;
       }
+      case "purgeHwBuffers": {
+        purgeWriteBuffers = call.argument("purgeWriteBuffers");
+        purgeReadBuffers = call.argument("purgeReadBuffers");
+        purgeHwBuffers(purgeWriteBuffers, purgeReadBuffers, result);
+        break;
+      }
       default: {
         result.notImplemented();
       }
@@ -153,6 +161,19 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
     if(usbSerialPort != null) {
       try {
         usbSerialPort.setParameters(baudRate, dataBits, stopBits, parity);
+        success = true;
+      } catch (IOException exception) {
+
+      }
+    }
+    result.success(success);
+  }
+
+  void purgeHwBuffers(boolean purgeWriteBuffers, boolean purgeReadBuffers, Result result) {
+    boolean success = false;
+    if(usbSerialPort != null) {
+      try {
+        usbSerialPort.purgeHwBuffers(purgeWriteBuffers, purgeReadBuffers);
         success = true;
       } catch (IOException exception) {
 
@@ -267,6 +288,7 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
     try {
       usbSerialPort = driver.getPorts().get(0);
       //usbSerialPort.getControlLines();
+      usbSerialPort. getSupportedControlLines();
 
       UsbDeviceConnection usbConnection = usbManager.openDevice(driver.getDevice());
       usbSerialPort.open(usbConnection);

@@ -46,4 +46,10 @@ class FlutterSerialCommunication {
     return FlutterSerialCommunicationPlatform.instance
         .setParameters(baudRate, dataBits, stopBits, parity);
   }
+
+  Future<void> purgeHwBuffers(
+      bool purgeWriteBuffers, bool purgeReadBuffers) async {
+    return FlutterSerialCommunicationPlatform.instance
+        .purgeHwBuffers(purgeWriteBuffers, purgeReadBuffers);
+  }
 }

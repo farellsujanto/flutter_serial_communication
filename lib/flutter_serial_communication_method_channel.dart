@@ -109,4 +109,16 @@ class MethodChannelFlutterSerialCommunication
         'setParameters', connectionParams);
     return isSent ?? false;
   }
+
+  @override
+  Future<bool> purgeHwBuffers(
+      bool purgeWriteBuffers, bool purgeReadBuffers) async {
+    final commandParams = <String, dynamic>{
+      'purgeWriteBuffers': purgeWriteBuffers,
+      'purgeReadBuffers': purgeReadBuffers,
+    };
+    final isSent =
+        await methodChannel.invokeMethod<bool>('purgeHwBuffers', commandParams);
+    return isSent ?? false;
+  }
 }

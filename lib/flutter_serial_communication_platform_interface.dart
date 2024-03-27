@@ -64,4 +64,8 @@ abstract class FlutterSerialCommunicationPlatform extends PlatformInterface {
       int baudRate, int dataBits, int stopBits, int parity) {
     throw UnimplementedError('setParameters() has not been implemented.');
   }
+
+  Future<void> purgeHwBuffers(bool purgeWriteBuffers, bool purgeReadBuffers) {
+    throw UnimplementedError('purgeHwBuffers() has not been implemented.');
+  }
 }
