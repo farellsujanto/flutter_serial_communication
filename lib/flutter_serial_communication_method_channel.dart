@@ -94,4 +94,31 @@ class MethodChannelFlutterSerialCommunication
     final isSent = await methodChannel.invokeMethod<bool>('setRTS', set);
     return isSent ?? false;
   }
+
+  /// Set connection parameters
+  @override
+  Future<bool> setParameters(
+      int baudRate, int dataBits, int stopBits, int parity) async {
+    final connectionParams = <String, dynamic>{
+      'baudRate': baudRate,
+      'dataBits': dataBits,
+      'stopBits': stopBits,
+      'parity': parity,
+    };
+    final isSent = await methodChannel.invokeMethod<bool>(
+        'setParameters', connectionParams);
+    return isSent ?? false;
+  }
+
+  @override
+  Future<bool> purgeHwBuffers(
+      bool purgeWriteBuffers, bool purgeReadBuffers) async {
+    final commandParams = <String, dynamic>{
+      'purgeWriteBuffers': purgeWriteBuffers,
+      'purgeReadBuffers': purgeReadBuffers,
+    };
+    final isSent =
+        await methodChannel.invokeMethod<bool>('purgeHwBuffers', commandParams);
+    return isSent ?? false;
+  }
 }

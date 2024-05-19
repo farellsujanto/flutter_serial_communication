@@ -50,8 +50,13 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
   private Result connectResult;
   private int write_wait_millis = 2000;
   private int baudRate = 9600;
+  private int dataBits = UsbSerialPort.DATABITS_8;
+  private int stopBits = UsbSerialPort.STOPBITS_1;
+  private int parity = UsbSerialPort.PARITY_NONE;
   private boolean connected = false;
   private USBGrantReceiver usbGrantReceiver = null;
+  private boolean purgeWriteBuffers = false;
+  private boolean purgeReadBuffers = false;
 
   private FlutterActivity activity;
 
@@ -92,6 +97,14 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
         setDTR(call.arguments(), result);
         break;
       }
+      case "setParameters": {
+        baudRate = call.argument("baudRate");
+        dataBits = call.argument("dataBits");
+        stopBits = call.argument("stopBits");
+        parity = call.argument("parity");
+        setParameters(baudRate, dataBits, stopBits, parity, result);
+        break;
+      }
       case "connect": {
         String name = call.argument("name");
         baudRate = call.argument("baudRate");
@@ -103,6 +116,12 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
       case "disconnect": {
         disconnect();
         result.success(true);
+        break;
+      }
+      case "purgeHwBuffers": {
+        purgeWriteBuffers = call.argument("purgeWriteBuffers");
+        purgeReadBuffers = call.argument("purgeReadBuffers");
+        purgeHwBuffers(purgeWriteBuffers, purgeReadBuffers, result);
         break;
       }
       default: {
@@ -129,6 +148,32 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
     if(usbSerialPort != null) {
       try {
         usbSerialPort.setDTR(set);
+        success = true;
+      } catch (IOException exception) {
+
+      }
+    }
+    result.success(success);
+  }
+
+  void setParameters(int baudRate, int dataBits, int stopBits, int parity, Result result) {
+    boolean success = false;
+    if(usbSerialPort != null) {
+      try {
+        usbSerialPort.setParameters(baudRate, dataBits, stopBits, parity);
+        success = true;
+      } catch (IOException exception) {
+
+      }
+    }
+    result.success(success);
+  }
+
+  void purgeHwBuffers(boolean purgeWriteBuffers, boolean purgeReadBuffers, Result result) {
+    boolean success = false;
+    if(usbSerialPort != null) {
+      try {
+        usbSerialPort.purgeHwBuffers(purgeWriteBuffers, purgeReadBuffers);
         success = true;
       } catch (IOException exception) {
 
@@ -242,7 +287,8 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
   public void openPort() {
     try {
       usbSerialPort = driver.getPorts().get(0);
-      usbSerialPort.getControlLines();
+      //usbSerialPort.getControlLines();
+      usbSerialPort. getSupportedControlLines();
 
       UsbDeviceConnection usbConnection = usbManager.openDevice(driver.getDevice());
       usbSerialPort.open(usbConnection);
