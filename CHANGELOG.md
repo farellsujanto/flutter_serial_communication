@@ -1,3 +1,9 @@
+## 0.2.5
+- Implementations setParameters & purgeHwBuffers
+- Fix for `usbSerialPort.getControlLines();` causing crash when connecting to a device
+
+Thanks to [nmiglio](https://github.com/nmiglio) for the contributions!
+
 ## 0.2.4
 - Implementations for setting usb DTR and RTS
 - Connect device after permission is granted
