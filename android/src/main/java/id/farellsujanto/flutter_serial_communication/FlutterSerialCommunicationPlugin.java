@@ -271,9 +271,19 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
       int flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
           ? PendingIntent.FLAG_MUTABLE : 0;
       usbGrantReceiver = new USBGrantReceiver(this);
-      activity.registerReceiver(
+      if (Build.VERSION.SDK_INT >= 34) {
+        activity.registerReceiver(
           usbGrantReceiver,
-          new IntentFilter(PluginConfig.INTENT_ACTION_GRANT_USB));
+          new IntentFilter(PluginConfig.INTENT_ACTION_GRANT_USB),
+          Context.RECEIVER_EXPORTED
+        );
+      } else {
+        activity.registerReceiver(
+          usbGrantReceiver,
+          new IntentFilter(PluginConfig.INTENT_ACTION_GRANT_USB)
+        );
+      }
+
       PendingIntent usbGrantIntent = PendingIntent.getBroadcast(activity,
           0,
           new Intent(PluginConfig.INTENT_ACTION_GRANT_USB), flags);
