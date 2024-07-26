@@ -1,3 +1,8 @@
+## 0.2.6
+- Update `registerReceiver` native method to support Android 14 (API 34)
+- Increase `minSdkVersion` to 21
+- Increase `compileSdkVersion` to 34
+
 ## 0.2.5
 - Implementations setParameters & purgeHwBuffers
 - Fix for `usbSerialPort.getControlLines();` causing crash when connecting to a device
