@@ -269,13 +269,13 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
 
     if (usbManager.hasPermission(driver.getDevice()) == false) {
       int flags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-          ? PendingIntent.FLAG_IMMUTABLE : 0;
+          ? PendingIntent.FLAG_MUTABLE : 0;
       usbGrantReceiver = new USBGrantReceiver(this);
       if (Build.VERSION.SDK_INT >= 34) {
         activity.registerReceiver(
           usbGrantReceiver,
           new IntentFilter(PluginConfig.INTENT_ACTION_GRANT_USB),
-          Context.RECEIVER_EXPORTED
+          Context.RECEIVER_NOT_EXPORTED // this is correct, but android studio seems to have issues recognizing.
         );
       } else {
         activity.registerReceiver(
@@ -285,8 +285,9 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
       }
 
       PendingIntent usbGrantIntent = PendingIntent.getBroadcast(activity,
-          0,
-          new Intent(PluginConfig.INTENT_ACTION_GRANT_USB), flags);
+        0,
+        new Intent(PluginConfig.INTENT_ACTION_GRANT_USB).setPackage(activity.getPackageName()),
+        flags);
 
       usbManager.requestPermission(driver.getDevice(), usbGrantIntent);
     } else {
