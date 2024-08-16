@@ -1,18 +1,6 @@
 group 'id.farellsujanto.flutter_serial_communication'
 version '1.0'
 
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.0'
-    }
-}
-
 rootProject.allprojects {
     repositories {
         google()
@@ -33,6 +21,10 @@ android {
 
     defaultConfig {
         minSdkVersion 21
+    }
+    
+    if (project.android.hasProperty("namespace")) {
+        namespace 'id.farellsujanto.flutter_serial_communication'
     }
 }
 
