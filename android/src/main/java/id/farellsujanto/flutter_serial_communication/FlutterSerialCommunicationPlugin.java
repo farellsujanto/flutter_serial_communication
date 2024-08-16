@@ -191,6 +191,16 @@ public class FlutterSerialCommunicationPlugin implements FlutterPlugin, MethodCa
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
     activity = (FlutterActivity) binding.getActivity();
     usbManager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
+    // TODO: Application cold started by an ACTION_USB_DEVICE_ATTACHED intent - propagate to Flutter?
+    // TODO: For example connect to the device:
+    // Intent intent = activity.getIntent();
+    // String action = intent.getAction();
+    // if(action.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+    //   UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+    //   Log.i("Action", action);
+    //   Log.i("UsbDevice", device.getDeviceName());
+    //   connect(device.getDeviceName());
+    // }
   }
 
   @Override
