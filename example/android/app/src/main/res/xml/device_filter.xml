@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <!--
+    Example:
+    note the ids are decimal numbers!
+    <usb-device vendor-id="1234" product-id="11" />
+    -->
+</resources>
