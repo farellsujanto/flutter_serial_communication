@@ -1,3 +1,10 @@
+## 0.2.7
+- Update library to support Android 14 (API 34) even more
+- Fix flutter's deprecated gradle plugins
+- Add sample device_filter in example app
+
+Thanks to [DominikStarke](https://github.com/DominikStarke) for the fix & contributions!
+
 ## 0.2.6
 - Update `registerReceiver` native method to support Android 14 (API 34)
 - Increase `minSdkVersion` to 21
