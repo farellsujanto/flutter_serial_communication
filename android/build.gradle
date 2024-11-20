@@ -22,7 +22,11 @@ android {
     defaultConfig {
         minSdkVersion 21
     }
-    
+
+    buildFeatures {
+        buildConfig = true
+    }
+
     if (project.android.hasProperty("namespace")) {
         namespace 'id.farellsujanto.flutter_serial_communication'
     }
