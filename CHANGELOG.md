@@ -1,3 +1,8 @@
+## 0.2.8
+- Fix AGP 8.0+ Build Issues
+
+Thanks to [mohammadestk](https://github.com/mohammadestk) for the fix & contributions!
+
 ## 0.2.7
 - Update library to support Android 14 (API 34) even more
 - Fix flutter's deprecated gradle plugins
